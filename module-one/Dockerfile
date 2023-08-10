@@ -5,6 +5,7 @@ ARG RISK_TOOLING_PERSONAL_TOKEN
 ADD src src
 ADD module.toml module.toml
 ADD main.py main.py
+ADD lambda_helper lambda_helper
 
 RUN yum install -y gcc git postgresql-devel
 

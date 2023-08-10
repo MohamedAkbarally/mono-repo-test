@@ -1,9 +1,9 @@
-name: deployment
+name: shadow
 
 on:
   push:
     branches:
-      - main
+      - shadow
     paths:
       - "module-one/**"
 jobs:
@@ -37,7 +37,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/module-one:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/module-one:production
+            ${{ steps.login-ecr.outputs.registry }}/module-one:shadow
             
             
       - name: Update Lambda function

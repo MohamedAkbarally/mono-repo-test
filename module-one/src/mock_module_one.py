@@ -1,2 +1,2 @@
 def mock_module_one():
-    return "hello world nonsense"
+    return "mock module one"

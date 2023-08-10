@@ -1,2 +1,2 @@
 def module_one():
-    return "hello world 2"
+    return "module_one"
