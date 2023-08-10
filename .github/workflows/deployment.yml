@@ -34,6 +34,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
+          context: . # Build context is set to the 'module-one/' directory
           build-args: RISK_TOOLING_PERSONAL_TOKEN=${{ secrets.RISK_TOOLING_PERSONAL_TOKEN }}
           provenance: false
           push: true
