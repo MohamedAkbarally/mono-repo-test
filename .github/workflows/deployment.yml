@@ -14,9 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Change directory to module-one
-        run: cd module-one
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -34,7 +31,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: . # Build context is set to the 'module-one/' directory
+          context: ./module-one
           build-args: RISK_TOOLING_PERSONAL_TOKEN=${{ secrets.RISK_TOOLING_PERSONAL_TOKEN }}
           provenance: false
           push: true
