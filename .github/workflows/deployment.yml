@@ -69,7 +69,7 @@ jobs:
       name: Build and Deploy Shadow Lambda Function
       runs-on: ubuntu-latest
       needs: paths-filter
-      if: (github.event_name == 'push') && (github.ref == format('refs/heads/shadow-{0}', inputs.function-name)) && (needs.paths-filter.outputs.haschanged == 'true')
+      if: (github.event_name == 'push') && startsWith(github.ref, format('refs/heads/shadow-{0}', inputs.function-name)) && (needs.paths-filter.outputs.haschanged == 'true')
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
