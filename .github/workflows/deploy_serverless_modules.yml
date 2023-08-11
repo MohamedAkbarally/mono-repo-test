@@ -1,0 +1,20 @@
+
+name: Deploy Risk Systems
+
+on:
+  push:
+    branches:
+      - main
+      - shadow-*
+jobs:
+    module-one:
+        uses: MohamedAkbarally/mono-repo-test/.github/workflows/serverless_module_workflow.yml@main
+        with:
+            function-name: module-one
+        secrets: inherit
+    module-two:
+      uses: MohamedAkbarally/mono-repo-test/.github/workflows/serverless_module_workflow.yml@main
+      with:
+          function-name: module-two
+      secrets: inherit
+  
