@@ -5,15 +5,10 @@ on:
   push:
     branches:
       - main
+      - shadow-*
 jobs:
-    deploy_lambdas:
-        runs-on: ubuntu-latest
-        strategy:
-            matrix:
-                lambdas: [module-one]
-        steps:
-        - name: Deploy to AWS Lambda
-          uses: MohamedAkbarally/mono-repo-test/.github/workflows/deployment.yml@main
-          with:
-            function-name: ${{ matrix.lambdas }}
-            secrets: inherit
+    module-one:
+        uses: MohamedAkbarally/mono-repo-test/.github/workflows/deployment.yml@main
+        with:
+            function-name: module-one
+        secrets: inherit
