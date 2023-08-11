@@ -25,6 +25,7 @@ jobs:
           workflows:
             - '${{ inputs.function-name }}/**'
   build-and-deploy-production:
+    name: Build and Deploy Production Lambda Function
     needs: paths-filter
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.paths-filter.outputs.haschanged == 'true'
     runs-on: ubuntu-latest
@@ -65,6 +66,7 @@ jobs:
             --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:production"     
 
   build-and-deploy-shadow:
+      name: Build and Deploy Shadow Lambda Function
       needs: paths-filter
       if: github.event_name == 'push' && github.ref == 'refs/heads/shadow-${{ inputs.function-name }}' && needs.paths-filter.outputs.haschanged == 'true'
       runs-on: ubuntu-latest
