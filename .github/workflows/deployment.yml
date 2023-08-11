@@ -11,12 +11,22 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
-  push:
-    paths:
-      - 'module-one/**'
 jobs:
+  paths-filter:
+    runs-on: ubuntu-latest
+    outputs:
+      haschanged: ${{ steps.filter.outputs.workflows }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          workflows:
+            - '${{ inputs.function-name }}/**'
   build_and_deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: paths-filter
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.paths-filter.outputs.haschanged == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -39,17 +49,17 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./module-one
+          context: ./${{ inputs.function-name }}
           build-args: RISK_TOOLING_PERSONAL_TOKEN=${{ secrets.RISK_TOOLING_PERSONAL_TOKEN }}
           provenance: false
           push: true
           tags: |
-            ${{ steps.login-ecr.outputs.registry }}/module-one:${{ github.sha }}
-            ${{ steps.login-ecr.outputs.registry }}/module-one:production
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:${{ github.sha }}
+            ${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:production
             
             
       - name: Update Lambda function
         run: |
           aws lambda update-function-code \
-            --function-name module-one \
-            --image-uri "${{ steps.login-ecr.outputs.registry }}/module-one:production"
+            --function-name ${{ inputs.function-name }} \
+            --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:production"
