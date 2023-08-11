@@ -26,9 +26,9 @@ jobs:
             - '${{ inputs.function-name }}/**'
   build-and-deploy-production:
     name: Build and Deploy Production Lambda Function
+    runs-on: ubuntu-latest
     needs: paths-filter
     if: (github.event_name == 'push') && (github.ref == 'refs/heads/main') && (needs.paths-filter.outputs.haschanged == 'true')
-    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -67,9 +67,9 @@ jobs:
 
   build-and-deploy-shadow:
       name: Build and Deploy Shadow Lambda Function
-      needs: [paths-filter, build-and-deploy-production]
-      if: (github.event_name == 'push') && (github.ref == 'refs/heads/shadow-${{ inputs.function-name }}') && (needs.paths-filter.outputs.haschanged == 'true')
       runs-on: ubuntu-latest
+      needs: paths-filter
+      if: (github.event_name == 'push') && (github.ref == format('refs/heads/shadow-{0}', inputs.function-name)) && (needs.paths-filter.outputs.haschanged == 'true')
       steps:
         - name: Checkout code
           uses: actions/checkout@v2
