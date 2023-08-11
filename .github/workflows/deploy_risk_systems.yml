@@ -1,0 +1,13 @@
+
+name: Deploy Risk Systems
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+    lambda-test:
+        uses: MohamedAkbarally/lambda-deployment-test/.github/workflows/deploy_lambda_function.yml@main
+        with:
+            function-name: module-one
+        secrets: inherit

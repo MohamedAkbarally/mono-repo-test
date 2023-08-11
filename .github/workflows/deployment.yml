@@ -1,15 +1,23 @@
-name: deployment
+name: Deploy Production Lambda Function
 
 on:
+  workflow_call:
+    inputs:
+      function-name:
+        required: true
+        type: string
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
   push:
-    branches:
-      - main
     paths:
-      - "module-one/**"
+      - 'module-one/**'
 jobs:
   build_and_deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    environment: production
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -44,4 +52,4 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name module-one \
-            --image-uri "${{ steps.login-ecr.outputs.registry }}/module-one:${{ github.sha }}"
+            --image-uri "${{ steps.login-ecr.outputs.registry }}/module-one:production"
