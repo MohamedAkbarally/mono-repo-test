@@ -15,7 +15,7 @@ def lambda_handler(function, event, _):
     logging.info("Lambda called")
     logging.info(f"Raw lambda event: {event}")
     try:
-        return function()
+        return function(event)
     except Exception as e:
         rollbar.report_exc_info()
         logging.exception("Main event loop exception occurred")
