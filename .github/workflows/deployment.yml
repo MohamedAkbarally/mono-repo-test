@@ -24,7 +24,7 @@ jobs:
         filters: |
           workflows:
             - '${{ inputs.function-name }}/**'
-  build_and_deploy:
+  build-and-deploy-production:
     needs: paths-filter
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.paths-filter.outputs.haschanged == 'true'
     runs-on: ubuntu-latest
@@ -62,4 +62,42 @@ jobs:
         run: |
           aws lambda update-function-code \
             --function-name ${{ inputs.function-name }} \
-            --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:production"
+            --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:production"     
+
+  build-and-deploy-shadow:
+      needs: paths-filter
+      if: github.event_name == 'push' && github.ref == 'refs/heads/shadow-${{ inputs.function-name }}' && needs.paths-filter.outputs.haschanged == 'true'
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Set up Docker Buildx
+          uses: docker/setup-buildx-action@v1
+
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v1
+          with:
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ap-southeast-2
+
+        - name: Login to Amazon ECR
+          id: login-ecr
+          uses: aws-actions/amazon-ecr-login@v1
+
+        - name: Build and push Docker image
+          uses: docker/build-push-action@v4
+          with:
+            context: ./${{ inputs.function-name }}
+            build-args: RISK_TOOLING_PERSONAL_TOKEN=${{ secrets.RISK_TOOLING_PERSONAL_TOKEN }}
+            provenance: false
+            push: true
+            tags: |
+              ${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:${{ github.sha }}
+              ${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:shadow
+        - name: Update Lambda function
+          run: |
+            aws lambda update-function-code \
+              --function-name shadow-${{ inputs.function-name }} \
+              --image-uri "${{ steps.login-ecr.outputs.registry }}/${{ inputs.function-name }}:shadow"
