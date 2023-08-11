@@ -7,7 +7,7 @@ on:
       - main
 jobs:
     lambda-test:
-        uses: MohamedAkbarally/lambda-deployment-test/.github/workflows/deploy_lambda_function.yml@main
+        uses: MohamedAkbarally/mono-repo-test/.github/workflows/deployment.yml@main
         with:
             function-name: module-one
         secrets: inherit
