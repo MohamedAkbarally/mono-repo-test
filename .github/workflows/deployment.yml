@@ -67,7 +67,7 @@ jobs:
 
   build-and-deploy-shadow:
       name: Build and Deploy Shadow Lambda Function
-      needs: paths-filter
+      needs: [paths-filter, build-and-deploy-production]
       if: github.event_name == 'push' && github.ref == 'refs/heads/shadow-${{ inputs.function-name }}' && needs.paths-filter.outputs.haschanged == 'true'
       runs-on: ubuntu-latest
       steps:
